@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import Constants from 'expo-constants';
 import * as Location from 'expo-location';
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import Dialog from "react-native-dialog";
-import { StyleSheet, Text, View, Animated,  Modal,AppRegistry } from 'react-native';
-import { Button } from 'react-native-paper';
+import { StyleSheet, Text, View } from 'react-native';
+import { Button, List } from 'react-native-paper';
 import { API_KEY } from './utils/WeatherAPIKey';
 
 
@@ -26,6 +25,11 @@ export default function App() {
   const [description, setDescription] = useState(null);
   const [dialogVisible, setDialogVisible] = useState(false);
 
+  const handleCancel = () => {
+    setDialogVisible(false);
+  };
+
+
   useEffect(() => {
     (async () => {
       
@@ -36,8 +40,9 @@ export default function App() {
       }
 
       let location = await Location.getCurrentPositionAsync({});
-      setLatitude(location.coords.latitude)
-      setLongitude(location.coords.longitude);
+
+      setLatitude(location.coords.latitude.toFixed(2))
+      setLongitude(location.coords.longitude.toFixed(2));
       setLocation(location.coords);
       setShowButton(true)
       setShowMap(true)
@@ -74,21 +79,45 @@ export default function App() {
   return (
     <View style={styles.container}>
       <View>
-          <Dialog.Container visible={dialogVisible}>
+          <Dialog.Container visible={dialogVisible} onBackdropPress={handleCancel}>
             <Dialog.Title>Weather info</Dialog.Title>
             <Dialog.Description>
-            Place = {name},
-            Temprature = {temperature},
-            Long = {longitude},
-            Lat = {latitude},
-            Pressure = {pressure},
-            Humidity = {humidity},
-            Description = {description},
+            • Place: {name}
             </Dialog.Description>
-            <Dialog.Button label="Close" onPress={closeDialog}  />
+
+            <Dialog.Description>
+            • Long: {longitude}
+            </Dialog.Description>
+
+            <Dialog.Description>
+            • Lat: {latitude}
+            </Dialog.Description>
+
+            <Dialog.Description>
+            • Pressure: {pressure}
+            </Dialog.Description>
+
+            <Dialog.Description>
+            • Humidity: {humidity}
+            </Dialog.Description>
+
+            <Dialog.Description>
+            • Temprature: {temperature}
+            </Dialog.Description>
+
+            <Dialog.Description>
+            • Description: {description} 
+            </Dialog.Description>           
+
           </Dialog.Container>
         </View>
-        {waitingText && <Text>Getting your position, hang tight!</Text>}
+        {waitingText && <Text style={{
+   fontSize: 20,
+   alignSelf: 'center',
+   justifyContent:"flex-start",
+   alignItems: 'center',
+   position:"absolute",
+   top:300}}>Getting your position, hang tight!</Text>}
       {showMap && <MapView
           style={{ flex: 1 }} 
           provider={PROVIDER_GOOGLE} 
